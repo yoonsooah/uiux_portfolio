@@ -1,4 +1,73 @@
-yoonsooah.desiger    }
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YOONSOOAH | Portfolio</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Monsieur La Doulaise: 이름 서명용 / Dancing Script: Hero 타이틀용 폴백 보장 / Great Vibes: 추가 캘리 -->
+  <link href="https://fonts.googleapis.com/css2?family=Monsieur+La+Doulaise&family=Dancing+Script:wght@700&family=Great+Vibes&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+
+  <style>
+    /* 1. 디자인 토큰 정의 및 테마 동기화 */
+    :root {
+      --black: #050505;
+      --card-bg: #000000;
+      --white: #ffffff;
+      --muted: #777777;
+      --soft: #aaaaaa;
+      --pink: #FFB7C5;
+      --pink-soft: rgba(255, 183, 197, 0.12);
+      --line: #1e1e1e;
+      --line-bright: #2d2d2d;
+      --gutter: 5%;
+      --max: 1920px;
+      --script: 'Dancing Script', 'Great Vibes', cursive;
+      --script-sign: 'Monsieur La Doulaise', 'Dancing Script', cursive;
+      --serif-bold: 'Playfair Display', serif;
+      --cursor-x: -100px;
+      --cursor-y: -100px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 100px;
+      background: var(--black);
+    }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Pretendard', -apple-system, sans-serif;
+      overflow-x: hidden;
+      line-height: 1.85;
+      letter-spacing: -0.035em;
+    }
+
+    /* 도트 그레인 배경 오버레이 */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background-image:
+        radial-gradient(circle, rgba(255,183,197,0.18) 1px, transparent 1px),
+        radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px);
+      background-size: 28px 28px, 56px 56px;
+      background-position: 0 0, 14px 14px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, rgba(0,0,0,0.5) 30%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, rgba(0,0,0,0.5) 30%, transparent 100%);
+    }
 
     /* 모든 직계 콘텐츠는 도트 위에 올라오게 */
     .navbar, .intro, .slogan-space-stage, main, footer {
@@ -1642,7 +1711,7 @@ yoonsooah.desiger    }
 
       const viewWidth = physicsViewport.offsetWidth;
       const viewHeight = physicsViewport.offsetHeight;
-      const gravity = 0.52; const friction = 0.94; const bounce = 0.28;
+      const gravity = 0.52; const bounce = 0.62;
 
       let anyActive = false;
 
@@ -1650,20 +1719,20 @@ yoonsooah.desiger    }
         if (c.settled) return;
 
         c.vy += gravity; c.x += c.vx; c.y += c.vy;
-        c.vx *= friction; c.vy *= friction;
+        c.vx *= 0.995; /* 공중 마찰 최소화 — 바닥 충돌까지 속도 유지 */
 
         const groundY = viewHeight - c.h / 2 - 4;
         if (c.y >= groundY) {
           c.y = groundY;
-          c.vy = -c.vy * bounce;
-          c.vx *= 0.65;
+          c.vy = -Math.abs(c.vy) * bounce; /* 항상 위로 튀도록 절댓값 처리 */
+          c.vx *= 0.82;
 
           if (!c.hasBounced && Math.abs(c.vy) > 0.8) {
             createSparkBurst(c.x, groundY);
             c.hasBounced = true;
           }
 
-          if (Math.abs(c.vy) < 0.25 && Math.abs(c.vx) < 0.25) {
+          if (Math.abs(c.vy) < 0.4 && Math.abs(c.vx) < 0.4) {
             c.vy = 0; c.vx = 0;
             c.y = groundY;
             c.settled = true;
