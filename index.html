@@ -1335,9 +1335,7 @@
     .cb-white:hover .cb-label { text-shadow: none; }
 
     /* 상단 컬러 라인 액센트 */
-    .cb-black::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:#1a1a1a; border-bottom:1px solid rgba(255,255,255,0.12); z-index:3; }
-    .cb-pink::before  { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:var(--pink); z-index:3; }
-    .cb-white::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:#e0e0e0; z-index:3; }
+
 
     @media (max-width: 760px) {
       .color-banner-track { grid-template-columns: 1fr; }
@@ -1910,51 +1908,64 @@
     let particles = [];
     let isPhysicsTriggered = false;
 
-    /* 바닥 충돌용 작은 스파크 */
-    function createSparkBurst(originX, originY) {
-      const pCount = 10;
-      const colors = ['#FFB7C5', '#ffffff'];
-      for (let i = 0; i < pCount; i++) {
-        const pEl = document.createElement('div');
-        pEl.style.cssText = `position:absolute;width:4px;height:4px;background:${colors[i % 2]};border-radius:50%;pointer-events:none;z-index:6;`;
-        physicsViewport.appendChild(pEl);
-        const angle = Math.random() * Math.PI * 2;
-        const speed = Math.random() * 3 + 2;
-        particles.push({ el: pEl, x: originX, y: originY,
-          vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed - 1.5,
-          alpha: 1.0, decay: Math.random() * 0.03 + 0.025, rot: 0, rotV: 0 });
-      }
-    }
-
-    /* 벽 충돌용 컨페티 폭발 — 핑크+화이트, 직사각형 조각 */
-    function createConfettiBurst(originX, originY, side) {
-      const count = 28;
-      const colors = ['#FFB7C5', '#FFC0CB', '#ffffff', '#ffe0e8', '#ff8fab'];
+    /* 공통 컨페티 생성 — 방향·범위·개수 커스텀 */
+    function spawnConfetti(originX, originY, { count = 22, baseAngle = null, spread = Math.PI * 2, speedMin = 3, speedMax = 9 } = {}) {
+      const colors = ['#FFB7C5', '#FFC0CB', '#ffffff', '#ffe0e8', '#ff8fab', '#ffd6e0', '#ffaec0'];
       for (let i = 0; i < count; i++) {
         const pEl = document.createElement('div');
-        const w = Math.random() * 7 + 4;
-        const h = Math.random() * 4 + 3;
+        const isRect = Math.random() > 0.4;
+        const w = isRect ? Math.random() * 9 + 4 : Math.random() * 6 + 4;
+        const h = isRect ? Math.random() * 5 + 3 : w;
         const color = colors[Math.floor(Math.random() * colors.length)];
-        pEl.style.cssText = `position:absolute;width:${w}px;height:${h}px;background:${color};pointer-events:none;z-index:6;border-radius:1px;`;
+        const radius = isRect ? '1px' : '50%';
+        pEl.style.cssText = `position:absolute;width:${w}px;height:${h}px;background:${color};pointer-events:none;z-index:6;border-radius:${radius};`;
         physicsViewport.appendChild(pEl);
 
-        /* 벽 방향에 따라 폭발 각도 범위 조정 */
-        const baseAngle = side === 'left' ? 0 : Math.PI;
-        const spread = Math.PI * 0.75;
-        const angle = baseAngle - spread / 2 + Math.random() * spread;
-        const speed = Math.random() * 7 + 4;
+        const ang = baseAngle !== null
+          ? baseAngle - spread / 2 + Math.random() * spread
+          : Math.random() * Math.PI * 2;
+        const speed = Math.random() * (speedMax - speedMin) + speedMin;
 
         particles.push({
           el: pEl,
           x: originX, y: originY,
-          vx: Math.cos(angle) * speed,
-          vy: Math.sin(angle) * speed - (Math.random() * 3 + 2),
+          vx: Math.cos(ang) * speed,
+          vy: Math.sin(ang) * speed - (Math.random() * 2 + 1),
           alpha: 1.0,
-          decay: Math.random() * 0.018 + 0.012,
+          decay: Math.random() * 0.018 + 0.011,
           rot: Math.random() * 360,
-          rotV: (Math.random() - 0.5) * 18
+          rotV: (Math.random() - 0.5) * 20
         });
       }
+    }
+
+    /* 바닥 충돌 — 위쪽 반구로 폭발 */
+    function createSparkBurst(originX, originY) {
+      spawnConfetti(originX, originY, {
+        count: 20,
+        baseAngle: -Math.PI / 2,  /* 위쪽 */
+        spread: Math.PI * 1.1,
+        speedMin: 2, speedMax: 8
+      });
+    }
+
+    /* 벽 충돌 — 안쪽 방향으로 폭발 */
+    function createConfettiBurst(originX, originY, side) {
+      const baseAngle = side === 'left' ? 0 : Math.PI;  /* 오른쪽 or 왼쪽 */
+      spawnConfetti(originX, originY, {
+        count: 30,
+        baseAngle,
+        spread: Math.PI * 0.8,
+        speedMin: 4, speedMax: 10
+      });
+    }
+
+    /* 캡슐끼리 충돌 — 전방향 */
+    function createCapsuleHitBurst(originX, originY) {
+      spawnConfetti(originX, originY, {
+        count: 16,
+        speedMin: 2, speedMax: 7
+      });
     }
 
     function setupPhysicsStage() {
@@ -1997,11 +2008,11 @@
 
       const viewWidth = physicsViewport.offsetWidth;
       const viewHeight = physicsViewport.offsetHeight;
-      const gravity = 0.52; const friction = 0.94; const bounce = 0.28;
+      const gravity = 0.52; const friction = 0.94; const bounce = 0.42;
 
       let anyActive = false;
 
-      capsules.forEach((c) => {
+      capsules.forEach((c, i) => {
         if (c.settled) return;
 
         c.vy += gravity; c.x += c.vx; c.y += c.vy;
@@ -2010,12 +2021,13 @@
         const groundY = viewHeight - c.h / 2 - 4;
         if (c.y >= groundY) {
           c.y = groundY;
+          const prevVy = c.vy;
           c.vy = -c.vy * bounce;
-          c.vx *= 0.65;
+          c.vx *= 0.7;
 
-          if (!c.hasBounced && Math.abs(c.vy) > 0.8) {
+          /* 튕길 때마다 컨페티 (속도가 충분할 때만) */
+          if (Math.abs(prevVy) > 1.2) {
             createSparkBurst(c.x, groundY);
-            c.hasBounced = true;
           }
 
           if (Math.abs(c.vy) < 0.25 && Math.abs(c.vx) < 0.25) {
@@ -2025,15 +2037,36 @@
           }
         }
 
-        /* 벽 충돌 — 처음 닿을 때 컨페티 폭발 */
+        /* 벽 충돌 — 튕길 때마다 컨페티 */
         if (c.x - c.w / 2 < 0) {
-          if (!c.blastedLeft) { createConfettiBurst(c.w / 2, c.y, 'left'); c.blastedLeft = true; }
-          c.x = c.w / 2; c.vx *= -bounce;
+          c.x = c.w / 2;
+          if (Math.abs(c.vx) > 0.8) createConfettiBurst(c.w / 2, c.y, 'left');
+          c.vx = Math.abs(c.vx) * bounce;
         }
         if (c.x + c.w / 2 > viewWidth) {
-          if (!c.blastedRight) { createConfettiBurst(viewWidth - c.w / 2, c.y, 'right'); c.blastedRight = true; }
-          c.x = viewWidth - c.w / 2; c.vx *= -bounce;
+          c.x = viewWidth - c.w / 2;
+          if (Math.abs(c.vx) > 0.8) createConfettiBurst(viewWidth - c.w / 2, c.y, 'right');
+          c.vx = -Math.abs(c.vx) * bounce;
         }
+
+        /* 캡슐끼리 충돌 */
+        capsules.forEach((o, j) => {
+          if (j <= i || o.settled) return;
+          const dx = o.x - c.x, dy = o.y - c.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          const minDist = (c.w / 2 + o.w / 2) * 0.72;
+          if (dist < minDist && dist > 0) {
+            const nx = dx / dist, ny = dy / dist;
+            const relV = (c.vx - o.vx) * nx + (c.vy - o.vy) * ny;
+            if (relV > 0) {
+              const impulse = relV * 0.6;
+              c.vx -= impulse * nx; c.vy -= impulse * ny;
+              o.vx += impulse * nx; o.vy += impulse * ny;
+              const cx = (c.x + o.x) / 2, cy = (c.y + o.y) / 2;
+              if (Math.abs(relV) > 1.5) createCapsuleHitBurst(cx, cy);
+            }
+          }
+        });
 
         c.el.style.transform = `translate3d(${c.x - c.w / 2}px, ${c.y - c.h / 2}px, 0)`;
         anyActive = true;
