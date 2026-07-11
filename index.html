@@ -373,6 +373,24 @@
       background: var(--black);
     }
 
+    .scatter-bg-photo {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.55;
+    }
+    .scatter-bg-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background:
+        linear-gradient(90deg, rgba(5,5,5,0.9) 0%, rgba(5,5,5,0.55) 45%, rgba(5,5,5,0.35) 100%),
+        linear-gradient(180deg, rgba(5,5,5,0.4) 0%, rgba(5,5,5,0.15) 30%, rgba(5,5,5,0.55) 100%);
+    }
+
     .scatter-center {
       position: relative;
       z-index: 3;
@@ -2111,7 +2129,6 @@
               data-title="PIECE">
               <img class="feat-card-img" src="work_piece.jpg" alt="PIECE">
               <div class="feat-card-overlay">
-                <span class="feat-card-badge">FEATURED</span>
                 <div class="feat-card-title">PIECE</div>
                 <div class="feat-card-desc">실제 커머스 링크 기반 친구들과 조각 펀딩을 통해 실용적인 기프팅 경험을 제공하는 플랫폼</div>
                 <div class="list-tags-box" style="display:none"><span>#UIUX</span><span>#Mobile Web</span><span>#Commerce</span></div>
@@ -2124,7 +2141,6 @@
               data-title="MAS Website">
               <img class="feat-card-img" src="work_mas.jpg" alt="MAS Website">
               <div class="feat-card-overlay">
-                <span class="feat-card-badge">PROJ 05</span>
                 <div class="feat-card-title">MAS Website</div>
                 <div class="feat-card-desc">미림마이스터고 전공동아리 MAS의 정체성과 포트폴리오 아카이빙 웹사이트</div>
                 <div class="list-tags-box" style="display:none"><span>#Official Web</span><span>#Archive</span></div>
@@ -2137,7 +2153,6 @@
               data-title="POP!CK">
               <img class="feat-card-img" src="popck_1.jpg" alt="POP!CK">
               <div class="feat-card-overlay">
-                <span class="feat-card-badge">PROJ 03</span>
                 <div class="feat-card-title">POP!CK</div>
                 <div class="feat-card-desc">라부부 세계관 도감 및 성격유형 진단을 결합한 버티컬 엔터테인먼트 커머스 앱</div>
                 <div class="list-tags-box" style="display:none"><span>#Art Toy</span><span>#Vertical Commerce</span></div>
@@ -2150,7 +2165,6 @@
               data-title="STEPBYSTEP">
               <img class="feat-card-img" src="stepbystep_Thum.png" alt="STEPBYSTEP">
               <div class="feat-card-overlay">
-                <span class="feat-card-badge">PROJ 02</span>
                 <div class="feat-card-title">STEPBYSTEP</div>
                 <div class="feat-card-desc">일상 속 건강 습관을 시각화하고 동기를 부여하는 케어 웹 플랫폼</div>
                 <div class="list-tags-box" style="display:none"><span>#Web Platform</span><span>#Health Care</span></div>
@@ -2223,73 +2237,65 @@
       <!-- Grid 뷰 — 전체 프로젝트를 카드형으로 -->
       <div class="project-grid-container reveal">
 
-        <div class="feat-card" tabindex="0" data-modal-trigger data-imgs="work_piece.jpg,work_piece_2.jpg,work_piece_3.jpg" data-index="FEATURED WORK" data-title="PIECE">
+        <div class="feat-card" tabindex="0" data-modal-trigger data-imgs="work_piece.jpg,work_piece_2.jpg,work_piece_3.jpg" data-title="PIECE">
           <img class="feat-card-img" src="work_piece.jpg" alt="PIECE">
           <div class="feat-card-overlay">
-            <span class="feat-card-badge">FEATURED</span>
             <div class="feat-card-title">PIECE</div>
             <div class="feat-card-desc">실제 커머스 링크 기반 친구들과 조각 펀딩을 통해 실용적인 기프팅 경험을 제공하는 플랫폼</div>
           </div>
         </div>
 
-        <div class="feat-card" tabindex="0" data-modal-trigger data-img="MUSEWAVE.jpg" data-index="PROJECT 01" data-title="MUSE WAVE">
+        <div class="feat-card" tabindex="0" data-modal-trigger data-img="MUSEWAVE.jpg" data-title="MUSE WAVE">
           <img class="feat-card-img" src="MUSEWAVE.jpg" alt="MUSE WAVE">
           <div class="feat-card-overlay">
-            <span class="feat-card-badge">PROJ 01</span>
             <div class="feat-card-title">MUSE WAVE</div>
             <div class="feat-card-desc">공부 몰입도를 높이고 지지해 주는 입체형 AI 튜터 맞춤형 학습 앱 서비스</div>
           </div>
         </div>
 
-        <div class="feat-card" tabindex="0" data-modal-trigger data-imgs="stepbystep_Thum.png,stepbystep_2.png,stepbystep_3.png" data-index="PROJECT 02" data-title="STEPBYSTEP">
+        <div class="feat-card" tabindex="0" data-modal-trigger data-imgs="stepbystep_Thum.png,stepbystep_2.png,stepbystep_3.png" data-title="STEPBYSTEP">
           <img class="feat-card-img" src="stepbystep_Thum.png" alt="STEPBYSTEP">
           <div class="feat-card-overlay">
-            <span class="feat-card-badge">PROJ 02</span>
             <div class="feat-card-title">STEPBYSTEP</div>
             <div class="feat-card-desc">일상 속 건강 습관을 시각화하고 동기를 부여하는 케어 웹 플랫폼</div>
           </div>
         </div>
 
-        <div class="feat-card" tabindex="0" data-modal-trigger data-imgs="popck_1.jpg,popck_2.jpg,popck_3.jpg" data-index="PROJECT 03" data-title="POP!CK">
+        <div class="feat-card" tabindex="0" data-modal-trigger data-imgs="popck_1.jpg,popck_2.jpg,popck_3.jpg" data-title="POP!CK">
           <img class="feat-card-img" src="popck_1.jpg" alt="POP!CK">
           <div class="feat-card-overlay">
-            <span class="feat-card-badge">PROJ 03</span>
             <div class="feat-card-title">POP!CK</div>
             <div class="feat-card-desc">라부부 세계관 도감 및 성격유형 진단을 결합한 버티컬 엔터테인먼트 커머스 앱</div>
           </div>
         </div>
 
-        <div class="feat-card" tabindex="0" data-modal-trigger data-img="momento.jpg" data-index="PROJECT 04" data-title="Momento">
+        <div class="feat-card" tabindex="0" data-modal-trigger data-img="momento.jpg" data-title="Momento">
           <img class="feat-card-img" src="momento.jpg" alt="Momento">
           <div class="feat-card-overlay">
-            <span class="feat-card-badge">PROJ 04</span>
             <div class="feat-card-title">Momento</div>
             <div class="feat-card-desc">반 친구들이 미션을 완료하면 디지털 캐릭터가 성장하는 게이미피케이션 기반 학급 운영 플랫폼</div>
           </div>
         </div>
 
-        <div class="feat-card" tabindex="0" data-modal-trigger data-imgs="work_mas.jpg,work_mas_2.jpg,work_mas_3.jpg" data-index="PROJECT 05" data-title="MAS Website">
+        <div class="feat-card" tabindex="0" data-modal-trigger data-imgs="work_mas.jpg,work_mas_2.jpg,work_mas_3.jpg" data-title="MAS Website">
           <img class="feat-card-img" src="work_mas.jpg" alt="MAS Website">
           <div class="feat-card-overlay">
-            <span class="feat-card-badge">PROJ 05</span>
             <div class="feat-card-title">MAS Website</div>
             <div class="feat-card-desc">미림마이스터고 전공동아리 MAS의 정체성과 포트폴리오 아카이빙 웹사이트</div>
           </div>
         </div>
 
-        <div class="feat-card" tabindex="0" data-modal-trigger data-img="work_aesop.jpg" data-index="PROJECT 06" data-title="Aesop Story Web">
+        <div class="feat-card" tabindex="0" data-modal-trigger data-img="work_aesop.jpg" data-title="Aesop Story Web">
           <img class="feat-card-img" src="work_aesop.jpg" alt="Aesop Story Web">
           <div class="feat-card-overlay">
-            <span class="feat-card-badge">PROJ 06</span>
             <div class="feat-card-title">Aesop Story Web</div>
             <div class="feat-card-desc">이솝의 미니멀 철학과 텍스트를 풀어내는 브랜드 스토리 북 가이드 웹</div>
           </div>
         </div>
 
-        <div class="feat-card" tabindex="0" data-modal-trigger data-img="work_asics.jpg" data-index="PROJECT 07" data-title="Asics Designer">
+        <div class="feat-card" tabindex="0" data-modal-trigger data-img="work_asics.jpg" data-title="Asics Designer">
           <img class="feat-card-img" src="work_asics.jpg" alt="Asics Designer">
           <div class="feat-card-overlay">
-            <span class="feat-card-badge">PROJ 07</span>
             <div class="feat-card-title">Asics Designer</div>
             <div class="feat-card-desc">아식스의 정체성을 이끈 스니커즈 디자이너들의 아카이브 가이드 웹페이지</div>
           </div>
@@ -2306,6 +2312,8 @@
 
   <!-- SCATTER INTRO — 컨택 섹션 바로 위로 재배치, 1920×1080 캔버스 -->
   <section class="scatter-intro">
+    <img class="scatter-bg-photo" src="scatter-bg.jpg" alt="">
+    <div class="scatter-bg-overlay" aria-hidden="true"></div>
     <div class="scatter-center reveal">
       <p class="scatter-eyebrow">Portfolio 2026</p>
       <h2 class="scatter-title">Yoon<br>Soo Ah</h2>
@@ -2743,6 +2751,7 @@
       const imgs = imgsRaw.split(',').map(s => s.trim()).filter(Boolean);
 
       modalIndex.textContent = item.dataset.index || '';
+      modalIndex.style.display = item.dataset.index ? '' : 'none';
       modalTitle.textContent = item.dataset.title || '';
 
       /* 슬라이드 생성 */
@@ -2951,11 +2960,9 @@
       grid.innerHTML = projects.map(p => `
         <div class="feat-card" tabindex="0" data-modal-trigger
           data-imgs="${(p.galleryUrls || [p.thumbnailUrl]).join(',')}"
-          data-index="${p.index || ''}"
           data-title="${p.title}">
           <img class="feat-card-img" src="${p.thumbnailUrl}" alt="${p.title}">
           <div class="feat-card-overlay">
-            <span class="feat-card-badge">FEATURED</span>
             <div class="feat-card-title">${p.title}</div>
             <div class="feat-card-desc">${p.description || ''}</div>
           </div>
@@ -2987,14 +2994,12 @@
     function renderProjectGrid(projects) {
       const grid = document.querySelector('.project-grid-container');
       if (!grid || !projects.length) return;
-      grid.innerHTML = projects.map((p, i) => `
+      grid.innerHTML = projects.map((p) => `
         <div class="feat-card" tabindex="0" data-modal-trigger
           data-imgs="${(p.galleryUrls || [p.thumbnailUrl]).join(',')}"
-          data-index="${p.index || ''}"
           data-title="${p.title}">
           <img class="feat-card-img" src="${p.thumbnailUrl}" alt="${p.title}">
           <div class="feat-card-overlay">
-            <span class="feat-card-badge">${p.featured ? 'FEATURED' : (p.index || `PROJ ${i + 1}`)}</span>
             <div class="feat-card-title">${p.title}</div>
             <div class="feat-card-desc">${p.description || ''}</div>
           </div>
