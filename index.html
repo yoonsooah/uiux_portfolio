@@ -203,7 +203,6 @@
       max-width: 1920px;
       height: 100vh;
       height: 100svh;
-      max-height: 1080px;
       margin: 0 auto;
       overflow: hidden;
       background: var(--black);
@@ -2672,6 +2671,82 @@
 
       goTo(0);
     })();
+  </script>
+  <script>
+    /* ===================================================
+       SANITY CMS 연동 — Works 섹션 동적 렌더링
+       =================================================== */
+    const SANITY_PROJECT_ID = '540d7zpq';
+    const SANITY_DATASET = 'production';
+    const SANITY_API_VERSION = '2024-01-01';
+
+    // GROQ 쿼리: order 오름차순으로 모든 project 문서를 가져옴
+    const GROQ_QUERY = encodeURIComponent(`
+      *[_type == "project"] | order(order asc) {
+        title,
+        index,
+        description,
+        tags,
+        featured,
+        "thumbnailUrl": thumbnail.asset->url,
+        "galleryUrls": gallery[].asset->url
+      }
+    `);
+
+    const SANITY_URL = `https://${SANITY_PROJECT_ID}.api.sanity.io/v${SANITY_API_VERSION}/data/query/${SANITY_DATASET}?query=${GROQ_QUERY}`;
+
+    async function loadProjectsFromCMS() {
+      try {
+        const res = await fetch(SANITY_URL);
+        if (!res.ok) throw new Error('Sanity fetch failed: ' + res.status);
+        const { result } = await res.json();
+        if (!result || !result.length) return; // 데이터 없으면 기존 하드코딩 유지
+
+        renderFeaturedCards(result.filter(p => p.featured));
+        renderProjectList(result);
+      } catch (err) {
+        console.warn('CMS 데이터를 불러오지 못했습니다. 기존 하드코딩된 내용을 표시합니다.', err);
+      }
+    }
+
+    function renderFeaturedCards(projects) {
+      const grid = document.querySelector('.featured-cards-grid');
+      if (!grid || !projects.length) return;
+      grid.innerHTML = projects.map(p => `
+        <div class="feat-card" tabindex="0" data-modal-trigger
+          data-imgs="${(p.galleryUrls || [p.thumbnailUrl]).join(',')}"
+          data-index="${p.index || ''}"
+          data-title="${p.title}">
+          <img class="feat-card-img" src="${p.thumbnailUrl}" alt="${p.title}">
+          <div class="feat-card-overlay">
+            <span class="feat-card-badge">FEATURED</span>
+            <div class="feat-card-title">${p.title}</div>
+            <div class="feat-card-desc">${p.description || ''}</div>
+          </div>
+        </div>
+      `).join('');
+      const featTotalEl = document.getElementById('featTotal');
+      if (featTotalEl) featTotalEl.textContent = projects.length;
+    }
+
+    function renderProjectList(projects) {
+      const list = document.querySelector('.project-list-container');
+      if (!list) return;
+      list.innerHTML = projects.map(p => `
+        <div class="project-list-item" tabindex="0" data-modal-trigger
+          data-imgs="${(p.galleryUrls || [p.thumbnailUrl]).join(',')}"
+          data-index="${p.index || ''}"
+          data-title="${p.title}"
+          data-desc="${p.description || ''}">
+          <div class="list-index">${p.index || ''}</div>
+          <div class="list-title-box"><h3>${p.title}</h3></div>
+          <div class="list-desc-box"><p>${p.description || ''}</p></div>
+          <div class="list-tags-box">${(p.tags || []).map(t => `<span>#${t}</span>`).join(' ')}</div>
+        </div>
+      `).join('');
+    }
+
+    window.addEventListener('DOMContentLoaded', loadProjectsFromCMS);
   </script>
 </body>
 </html>
