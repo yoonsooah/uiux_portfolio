@@ -7,8 +7,8 @@
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <!-- Monsieur La Doulaise: 이름 서명용 / Dancing Script: Hero 타이틀용 폴백 보장 / Great Vibes: 추가 캘리 -->
-  <link href="https://fonts.googleapis.com/css2?family=Monsieur+La+Doulaise&family=Dancing+Script:wght@700&family=Great+Vibes&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+  <!-- Oranienbaum: 전체 라틴 문자 적용 (한글 글리프가 없어 자동으로 Pretendard로 대체됨) -->
+  <link href="https://fonts.googleapis.com/css2?family=Oranienbaum&display=swap" rel="stylesheet">
   <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
 
   <style>
@@ -23,11 +23,14 @@
       --pink-soft: rgba(255, 183, 197, 0.12);
       --line: #1e1e1e;
       --line-bright: #2d2d2d;
-      --gutter: 5%;
-      --max: 1920px;
-      --script: 'Dancing Script', 'Great Vibes', cursive;
-      --script-sign: 'Monsieur La Doulaise', 'Dancing Script', cursive;
-      --serif-bold: 'Playfair Display', serif;
+      --gutter: 6%;
+      --max: 1440px;
+      /* Oranienbaum: 라틴 문자 전체 적용. 이 폰트는 한글 글리프가 없어
+         브라우저가 글자 단위로 자동으로 Pretendard(한글)로 대체합니다. */
+      --font-main: 'Oranienbaum', 'Pretendard', -apple-system, sans-serif;
+      --script: var(--font-main);
+      --script-sign: var(--font-main);
+      --serif-bold: var(--font-main);
       --cursor-x: -100px;
       --cursor-y: -100px;
     }
@@ -49,8 +52,9 @@
       color: var(--white);
       font-family: 'Pretendard', -apple-system, sans-serif;
       overflow-x: hidden;
-      line-height: 1.85;
-      letter-spacing: -0.035em;
+      line-height: 1.8;
+      letter-spacing: -0.012em;
+      font-size: 16px;
     }
 
     /* 도트 그레인 배경 오버레이 */
@@ -70,7 +74,7 @@
     }
 
     /* 모든 직계 콘텐츠는 도트 위에 올라오게 */
-    .navbar, .intro, .slogan-space-stage, main, footer {
+    .navbar, .intro, .scatter-intro, .slogan-space-stage, main, footer {
       position: relative;
       z-index: 1;
     }
@@ -142,29 +146,35 @@
       left: 0;
       width: 100%;
       z-index: 99;
-      background: rgba(5, 5, 5, 0.85);
-      border-bottom: 1px solid var(--line);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      padding: 22px var(--gutter) 0;
+      pointer-events: none;
     }
 
     .nav {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      min-height: 90px;
-      padding: 0 var(--gutter);
+      min-height: 64px;
+      padding: 0 30px;
       max-width: var(--max);
       margin: 0 auto;
+      pointer-events: auto;
+      background: rgba(5, 5, 5, 0.55);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 999px;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 10px 34px rgba(0,0,0,0.3);
+      transition: background 220ms ease, box-shadow 220ms ease;
     }
 
     .brand {
       color: var(--white);
       text-decoration: none;
-      font-size: 2.4rem;
+      font-size: 1.4rem;
       font-weight: 400;
-      letter-spacing: 3px;
-      font-family: 'Monsieur La Doulaise', 'Dancing Script', cursive;
+      letter-spacing: 1px;
+      font-family: var(--font-main);
       line-height: 1;
     }
 
@@ -175,8 +185,8 @@
     .nav-links a {
       color: var(--muted);
       text-decoration: none;
-      margin-left: 40px;
-      font-size: 0.88rem;
+      margin-left: 36px;
+      font-size: 0.875rem;
       text-transform: uppercase;
       letter-spacing: 2px;
       font-weight: 600;
@@ -189,61 +199,124 @@
 
     .intro {
       position: relative;
-      width: 100vw;
-      min-height: 100vh;
-      min-height: 100svh;
-      display: grid;
-      place-items: center;
-      padding: 0 var(--gutter);
+      width: 100%;
+      max-width: 1920px;
+      height: 100vh;
+      height: 100svh;
+      max-height: 1080px;
+      margin: 0 auto;
       overflow: hidden;
       background: var(--black);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: clamp(70px, 13vh, 130px) var(--gutter) clamp(28px, 6vh, 56px);
+      box-sizing: border-box;
     }
 
-    .ripple-canvas {
+    /* 배경 — 흐름을 표현하는 일렁이는 핑크 물결 그래픽 */
+    .hero-waves {
       position: absolute;
       inset: 0;
       z-index: 0;
-      width: 100%;
-      height: 100%;
+      overflow: hidden;
       pointer-events: none;
     }
+    .hero-waves svg {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 200%;
+      mix-blend-mode: screen;
+    }
+    .wave-layer-1 { animation: waveScrollA 22s linear infinite; opacity: 0.6;  bottom: -4%; height: 68%; }
+    .wave-layer-2 { animation: waveScrollB 16s linear infinite; opacity: 0.45; bottom: 3%;  height: 58%; }
+    .wave-layer-3 { animation: waveScrollA 30s linear infinite; opacity: 0.32; bottom: 10%; height: 48%; }
+    @keyframes waveScrollA {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+    @keyframes waveScrollB {
+      from { transform: translateX(-50%); }
+      to   { transform: translateX(0); }
+    }
+    /* 은은한 배경 발광 — 물결에 깊이감 부여 */
+    .hero-waves::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 45% at 50% 100%, rgba(255,183,197,0.16) 0%, transparent 70%);
+    }
 
-    .intro-title {
+    .intro-welcome {
       position: relative;
       z-index: 1;
-      margin: 0;
-      /* Monsieur La Doulaise — 자기소개 서명체와 동일 폰트 */
-      font-family: 'Monsieur La Doulaise', 'Dancing Script', cursive;
+    }
+    .intro-eyebrow {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+    .intro-welcome-line {
+      font-family: var(--font-main);
+      font-size: clamp(1rem, 2.4vh, 1.5rem);
+      color: var(--white);
+      line-height: 1.5;
+    }
+    .intro-welcome-line.intro-welcome-indent {
+      padding-left: 1.4em;
+    }
+
+    .intro-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* 슬로건 — 이름보다 크게, 메인 헤드라인 역할. vh 기반으로 짧은 화면에서도 잘리지 않음 */
+    .intro-slogan {
+      margin: 0 0 0.28em;
+      font-family: var(--font-main);
       font-weight: 400;
-      /* 1920×1080 기준 최대 11rem → "Yoon Soo Ah" 한 줄 기준 좌우 여백 확보 */
-      font-size: clamp(3.2rem, 7vw, 10.5rem);
-      line-height: 1.2;
-      letter-spacing: 0.04em;
-      text-align: center;
-      user-select: none;
-      /* 위아래 클립 방지: 넉넉한 패딩 */
-      padding: 0.15em 6vw 0.25em;
-      max-width: 100%;
-      white-space: nowrap;
-      /* 혹시 넘칠 경우 자동 축소 */
-      overflow: visible;
-      background: linear-gradient(135deg, #ffffff 0%, #FFB7C5 55%, #ff8fab 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      filter: drop-shadow(0 2px 32px rgba(255,183,197,0.28));
+      font-size: clamp(1.8rem, 7.6vh, 6.4rem);
+      line-height: 1.05;
+      letter-spacing: 0.01em;
+      color: var(--white);
+      filter: drop-shadow(0 2px 40px rgba(255,183,197,0.22));
+    }
+
+    /* 이름 — 슬로건 아래 작은 서명처럼 */
+    .intro-name {
+      margin: 0;
+      font-family: var(--font-main);
+      font-weight: 400;
+      font-size: clamp(0.95rem, 2.4vh, 1.7rem);
+      line-height: 1.3;
+      letter-spacing: 0.06em;
+      color: rgba(255,255,255,0.75);
+    }
+
+    .intro-handle {
+      position: absolute;
+      right: var(--gutter);
+      bottom: clamp(20px, 4vh, 40px);
+      z-index: 1;
+      font-size: 0.875rem;
+      color: var(--muted);
+      letter-spacing: 0.5px;
     }
 
     /* 뷰포트 너비가 좁아지면 자동 줄바꿈으로 전환 */
     @media (max-width: 900px) {
-      .intro-title {
-        white-space: normal;
-        font-size: clamp(2.8rem, 10vw, 6rem);
-        padding: 0.1em 5vw 0.2em;
-      }
+      .intro-slogan { font-size: clamp(1.7rem, 6.5vh, 3rem); }
+      .intro-name { font-size: clamp(0.9rem, 2.2vh, 1.3rem); }
     }
 
-    .intro-title::after {
+    .intro-name.is-typing::after,
+    .intro-slogan.is-typing::after {
       content: "";
       display: inline-block;
       width: 3px;
@@ -252,16 +325,93 @@
       background: var(--pink);
       transform: translateY(0.1em);
       animation: caretBlink 800ms steps(1) infinite;
-      -webkit-text-fill-color: initial;
-    }
-
-    .intro-title.typing-complete::after {
-      opacity: 0;
-      animation: none;
     }
 
     @keyframes caretBlink {
       50% { opacity: 0; }
+    }
+
+    /* ============================================
+       SCATTER INTRO — 큰 중앙 워드마크 주위로 떠 있는 작업물 썸네일
+       ============================================ */
+    .scatter-intro {
+      position: relative;
+      width: 100%;
+      max-width: 1920px;
+      aspect-ratio: 1920 / 1080;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      padding: 0 var(--gutter);
+    }
+
+    .scatter-center {
+      position: relative;
+      z-index: 3;
+      text-align: left;
+      max-width: 720px;
+    }
+    .scatter-eyebrow {
+      font-size: 0.875rem;
+      font-weight: 700;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--pink);
+      margin-bottom: 20px;
+    }
+    .scatter-title {
+      font-family: var(--font-main);
+      font-size: clamp(3rem, 9vw, 8rem);
+      line-height: 0.98;
+      letter-spacing: 0.02em;
+      color: var(--white);
+      margin-bottom: 26px;
+    }
+    .scatter-desc {
+      font-size: 1.02rem;
+      color: var(--soft);
+      line-height: 1.85;
+      word-break: keep-all;
+      margin-bottom: 36px;
+    }
+    .scatter-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      border: 1px solid var(--line-bright);
+      padding: 10px 10px 10px 26px;
+      border-radius: 999px;
+      transition: border-color 200ms ease, background 200ms ease;
+    }
+    .scatter-cta:hover { border-color: var(--pink); background: rgba(255,183,197,0.06); }
+    .scatter-cta span.cta-label {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: 0.3px;
+    }
+    .scatter-cta span.cta-arrow {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--pink);
+      color: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+      transition: transform 200ms ease;
+    }
+    .scatter-cta:hover span.cta-arrow { transform: rotate(45deg); }
+
+    @media (max-width: 900px) {
+      .scatter-intro { aspect-ratio: auto; padding: 90px 24px; }
     }
 
     /* 물리 인터랙션 무대 높이 700px */
@@ -334,7 +484,7 @@
       position: absolute;
       padding: 12px 28px;
       border-radius: 40px;
-      font-size: clamp(0.8rem, 1.1vw, 1.05rem);
+      font-size: clamp(0.875rem, 1.1vw, 1.05rem);
       font-weight: 700;
       white-space: nowrap;
       user-select: none;
@@ -370,61 +520,60 @@
     }
 
     .section {
-      padding: 140px var(--gutter);
+      padding: 130px var(--gutter);
     }
 
-    /* 6. PROFILE SECTION */
-    .profile-section-wrapper {
-      position: relative;
-      border-top: none;
-      padding-top: 0;
+    /* 섹션 상단 아이브로우 라벨 — 전체 페이지 위계 일관성 확보 */
+    .eyebrow-label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 700;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--pink);
+      margin-bottom: 20px;
     }
 
-    .profile-layout-v2 {
-      display: grid;
-      grid-template-columns: 0.9fr 1.9fr;
-      gap: clamp(50px, 6vw, 140px);
-      align-items: start;
+    /* 6. PROFILE SECTION — 큰 프로필 히어로 + 아래로 쭉 이어지는 상세 항목 */
+    .profile-hero {
+      display: flex;
+      align-items: center;
+      gap: clamp(48px, 7vw, 120px);
+      padding-bottom: 72px;
+      margin-bottom: 72px;
+      border-bottom: 1px solid var(--line);
     }
+    .profile-hero-photo { flex-shrink: 0; }
+    .profile-hero-name { flex: 1; }
 
-    .profile-avatar-area {
+    .profile-details {
       display: flex;
       flex-direction: column;
-      align-items: flex-start;
-      text-align: left;
+    }
+    .detail-row {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: clamp(24px, 4vw, 64px);
+      padding: 44px 0;
     }
 
-    /* 사진 — 폴라로이드 프레임 */
-    .avatar-photo-large {
-      width: 100%;
-      max-width: 380px;
-      margin-bottom: 36px;
-      background: #ffffff;
-      padding: 16px 16px 56px 16px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.65), 0 4px 12px rgba(0,0,0,0.3);
-      transform: rotate(-1.5deg);
-      transition: transform 350ms cubic-bezier(0.16,1,0.3,1), box-shadow 350ms ease;
+    @media (max-width: 1200px) {
+      .profile-hero { flex-direction: column; align-items: flex-start; }
+      .detail-row { grid-template-columns: 1fr; gap: 20px; }
     }
-    .avatar-photo-large:hover {
-      transform: rotate(0deg) scale(1.025);
-      box-shadow: 0 32px 80px rgba(0,0,0,0.75), 0 8px 24px rgba(255,183,197,0.15);
+
+    /* 사진 — 심플한 단일 프로필 사진 */
+    .profile-photo {
+      width: clamp(260px, 30vw, 360px);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.5);
     }
-    .avatar-photo-large img {
+    .profile-photo img {
       width: 100%;
       aspect-ratio: 3 / 4;
       display: block;
       object-fit: cover;
-    }
-    /* 폴라로이드 하단 텍스트 영역 */
-    .avatar-photo-large::after {
-      content: 'Yoon Soo Ah  ♡';
-      display: block;
-      text-align: center;
-      font-family: var(--script-sign);
-      font-size: 1.3rem;
-      color: #222;
-      margin-top: 10px;
-      letter-spacing: 0.04em;
     }
 
     .palette-container {
@@ -465,7 +614,7 @@
       overflow: hidden;
     }
     .paint-palette-title {
-      font-size: 0.72rem;
+      font-size: 0.875rem;
       font-weight: 700;
       letter-spacing: 2px;
       text-transform: uppercase;
@@ -512,19 +661,19 @@
       gap: 4px;
     }
     .color-card-name {
-      font-size: 0.78rem;
+      font-size: 0.875rem;
       font-weight: 700;
       letter-spacing: 1px;
       text-transform: uppercase;
     }
     .color-card-hex {
-      font-size: 0.68rem;
+      font-size: 0.875rem;
       color: var(--muted);
       letter-spacing: 0.5px;
       font-family: monospace;
     }
     .color-card-desc {
-      font-size: 0.76rem;
+      font-size: 0.875rem;
       color: var(--soft);
       line-height: 1.65;
       margin-top: 2px;
@@ -538,53 +687,24 @@
     .color-card-pink .color-swatch-pill { background: #FFB7C5; }
     .color-card-pink .color-card-name { color: var(--pink); }
 
-    .profile-content-area {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .editorial-heading-section {
-      margin-bottom: 32px;
-    }
-
-    .editorial-serif-title {
-      font-family: var(--serif-bold);
-      font-style: italic;
-      font-size: clamp(4rem, 8vw, 7.5rem);
-      line-height: 1.0;
-      color: var(--white);
-      margin-bottom: 40px;
-      letter-spacing: -0.01em;
-    }
-
-    /* 이름 텍스트 스타일 (글래스모피즘 박스 제거, 텍스트만 유지) */
+    /* 이름 텍스트 스타일 — 프로필 히어로의 중심 요소로 확대 */
     .script-name-main {
       font-family: var(--script-sign);
-      font-size: clamp(3rem, 5.5vw, 6.5rem);
+      font-size: clamp(3.4rem, 7vw, 7.8rem);
       color: var(--pink);
-      line-height: 1.45;
-      letter-spacing: 0.02em;
-      margin-bottom: 20px;
+      line-height: 1.15;
+      letter-spacing: 0.01em;
+      margin-bottom: 16px;
       overflow: visible;
-      padding-bottom: 0.2em;
       display: block;
     }
     .script-name-sub-ko {
-      font-size: clamp(1rem, 1.5vw, 1.3rem);
+      font-size: clamp(1.05rem, 1.6vw, 1.4rem);
       font-weight: 300;
       color: var(--soft);
       letter-spacing: 0.12em;
       display: block;
-      margin-bottom: 40px;
-      line-height: 2.2;
-    }
-
-    .info-grid-v2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 56px;
-      border-top: 1px solid var(--line);
-      padding-top: 56px;
+      line-height: 1.6;
     }
 
     .info-block-v2 h3 {
@@ -597,6 +717,11 @@
       border-left: 2px solid var(--pink);
       padding-left: 12px;
       line-height: 1.2;
+      position: sticky;
+      top: 112px;
+    }
+    @media (max-width: 1200px) {
+      .info-block-v2 h3 { position: static; margin-bottom: 12px; }
     }
 
     .info-list-v2 li {
@@ -617,30 +742,91 @@
       padding-left: 69px;
     }
 
-    /* Skill set */
-    .skill-item-row {
+    /* Skill set — 카드 로우 스타일 (레퍼런스: 후기 카드 그리드), 한 장은 플레임 그래픽 강조 */
+    .skill-card-row {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+    }
+    .skill-card {
+      position: relative;
       display: flex;
-      align-items: center;
+      flex-direction: column;
       justify-content: space-between;
-      padding: 10px 0;
-      border-bottom: 1px solid var(--line);
+      min-height: 240px;
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255,255,255,0.015);
+      overflow: hidden;
+      transition: border-color 200ms ease, transform 200ms ease;
     }
-    .skill-name-label {
-      font-size: 0.92rem;
+    .skill-card:hover { border-color: rgba(255,183,197,0.4); transform: translateY(-4px); }
+
+    /* 호버 시 아래에서 위로 스르륵 차오르는 컬러 인터랙션 */
+    .skill-card::after {
+      content: '';
+      position: absolute;
+      z-index: 0;
+      left: 0; right: 0; bottom: 0;
+      height: 0%;
+      background: linear-gradient(180deg, #ffc7d3 0%, #FFB7C5 60%, #ff9fb5 100%);
+      transition: height 480ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .skill-card:hover::after { height: 100%; }
+
+    .skill-card-title {
+      position: relative; z-index: 1;
+      font-family: var(--font-main);
+      font-size: clamp(1.6rem, 2vw, 2.1rem);
+      font-weight: 400;
+      color: var(--white);
+      line-height: 1.1;
+      margin-bottom: 14px;
+      transition: color 260ms ease;
+    }
+    .skill-card-desc {
+      position: relative; z-index: 1;
+      font-size: 0.9rem;
       color: var(--soft);
-      font-weight: 600;
+      line-height: 1.75;
+      word-break: keep-all;
+      transition: color 260ms ease;
     }
-    .skill-stars-box {
-      display: flex;
-      gap: 4px;
-    }
-    .star-on {
+    .skill-card-desc strong { color: var(--white); font-weight: 700; transition: color 260ms ease; }
+    .skill-card-tag {
+      position: relative; z-index: 1;
+      display: inline-block;
+      align-self: flex-start;
+      margin-top: 20px;
+      font-size: 0.875rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
       color: var(--pink);
-      font-size: 0.82rem;
+      border: 1px solid rgba(255,183,197,0.28);
+      background: rgba(255,183,197,0.06);
+      padding: 6px 14px;
+      border-radius: 999px;
+      transition: color 260ms ease, border-color 260ms ease, background 260ms ease;
     }
-    .star-off {
-      color: var(--line-bright);
-      font-size: 0.82rem;
+    .skill-card:hover .skill-card-title,
+    .skill-card:hover .skill-card-desc,
+    .skill-card:hover .skill-card-desc strong { color: #1a0509; }
+    .skill-card:hover .skill-card-tag {
+      color: #1a0509;
+      border-color: rgba(26,5,9,0.3);
+      background: rgba(26,5,9,0.08);
+    }
+
+    @media (max-width: 1100px) {
+      .skill-card-row { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 700px) {
+      .skill-card-row { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 480px) {
+      .skill-card-row { grid-template-columns: 1fr; }
     }
 
     /* ── FEATURED CARDS (대표 프로젝트 카드 갤러리) ── */
@@ -715,7 +901,7 @@
       pointer-events: none;
     }
     .feat-nav-counter {
-      font-size: 0.75rem;
+      font-size: 0.875rem;
       color: var(--muted);
       letter-spacing: 1px;
       min-width: 36px;
@@ -772,7 +958,7 @@
 
     .feat-card-badge {
       display: inline-block;
-      font-size: 0.63rem;
+      font-size: 0.875rem;
       font-weight: 700;
       letter-spacing: 2px;
       text-transform: uppercase;
@@ -793,7 +979,7 @@
       margin-bottom: 7px;
     }
     .feat-card-desc {
-      font-size: 0.75rem;
+      font-size: 0.875rem;
       color: rgba(255,255,255,0.58);
       line-height: 1.6;
       display: -webkit-box;
@@ -839,7 +1025,7 @@
     }
 
     .list-index {
-      font-size: 0.85rem;
+      font-size: 0.875rem;
       font-weight: 700;
       color: var(--muted);
       letter-spacing: 1px;
@@ -873,7 +1059,7 @@
     }
 
     .list-tags-box span {
-      font-size: 0.72rem;
+      font-size: 0.875rem;
       color: var(--muted);
       border: 1px solid var(--line);
       padding: 4px 12px;
@@ -976,7 +1162,7 @@
       flex: 1;
     }
     .modal-meta-compact .m-index {
-      font-size: 0.72rem;
+      font-size: 0.875rem;
       color: var(--pink);
       letter-spacing: 2px;
       font-weight: 700;
@@ -1019,7 +1205,7 @@
       pointer-events: none;
     }
     .modal-slide-counter {
-      font-size: 0.82rem;
+      font-size: 0.875rem;
       color: var(--muted);
       font-weight: 700;
       letter-spacing: 1px;
@@ -1034,7 +1220,7 @@
       border: 1px solid rgba(255,255,255,0.15);
       color: var(--white);
       font-weight: 700;
-      font-size: 0.78rem;
+      font-size: 0.875rem;
       padding: 10px 20px;
       letter-spacing: 1.5px;
       text-transform: uppercase;
@@ -1129,8 +1315,9 @@
 
     .reveal {
       opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 500ms ease, transform 500ms ease;
+      transform: translateY(36px);
+      transition: opacity 900ms cubic-bezier(0.16,1,0.3,1), transform 900ms cubic-bezier(0.16,1,0.3,1);
+      will-change: opacity, transform;
     }
     .reveal.is-visible {
       opacity: 1;
@@ -1141,7 +1328,7 @@
       border-top: 1px solid var(--line);
       padding: 40px 0;
       color: var(--muted);
-      font-size: 0.85rem;
+      font-size: 0.875rem;
     }
 
     /* ── Activities 카드 그리드 ── */
@@ -1177,7 +1364,7 @@
       gap: 5px;
     }
     .activity-tag {
-      font-size: 0.7rem;
+      font-size: 0.875rem;
       font-weight: 700;
       letter-spacing: 1.5px;
       text-transform: uppercase;
@@ -1221,8 +1408,7 @@
 
     /* ── 기존 반응형 ── */
     @media (max-width: 1200px) {
-      .profile-layout-v2, .contact { grid-template-columns: 1fr; }
-      .profile-avatar-area { margin-bottom: 50px; }
+      .contact { grid-template-columns: 1fr; }
       .contact-links { margin-top: 50px; }
     }
 
@@ -1232,11 +1418,9 @@
     }
 
     @media (max-width: 760px) {
-      .intro-title { font-size: clamp(2.8rem, 12vw, 6.5rem); padding: 10px 15px; }
       .nav { min-height: 70px; }
       .nav-links { display: none; }
       .section { padding: 90px 24px; }
-      .info-grid-v2 { grid-template-columns: 1fr; gap: 44px; }
       .project-list-item { grid-template-columns: 1fr; gap: 8px; padding: 24px 12px; }
       .list-desc-box p { white-space: normal; padding-right: 0; }
     }
@@ -1299,7 +1483,7 @@
 
     .cb-hex {
       font-family: monospace;
-      font-size: 0.72rem;
+      font-size: 0.875rem;
       letter-spacing: 2px;
       color: var(--muted);
       margin-bottom: 6px;
@@ -1309,7 +1493,7 @@
     .cb-pink  .cb-desc { color: rgba(40,10,16,0.7); }
     .cb-white .cb-desc { color: rgba(30,30,30,0.65); }
     .cb-keyword {
-      font-size: 0.78rem;
+      font-size: 0.875rem;
       font-weight: 700;
       letter-spacing: 2.5px;
       text-transform: uppercase;
@@ -1342,6 +1526,209 @@
       .color-banner-panel { min-height: 300px; }
       .color-banner-panel + .color-banner-panel { border-left: none; border-top: 1px solid rgba(255,255,255,0.07); }
       .cb-content { padding: 28px 24px; }
+    }
+
+    /* ============================================
+       GROWTH STORY — 성장 스토리 섹션
+       ============================================ */
+    .growth-section {
+      border-top: 1px solid var(--line);
+    }
+
+    .growth-header {
+      max-width: 760px;
+      margin-bottom: 64px;
+    }
+
+    .growth-title-kr {
+      font-size: clamp(2rem, 3.6vw, 3.2rem);
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      line-height: 1.35;
+      margin-bottom: 10px;
+      word-break: keep-all;
+    }
+
+    .growth-title-en {
+      font-family: var(--font-main);
+      font-size: clamp(1.05rem, 1.6vw, 1.4rem);
+      color: var(--pink);
+      letter-spacing: 0.02em;
+      margin-bottom: 28px;
+    }
+
+    .growth-lead {
+      font-size: 1.05rem;
+      color: var(--soft);
+      line-height: 1.9;
+      word-break: keep-all;
+      margin-bottom: 28px;
+    }
+
+    .growth-keywords {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .growth-keywords span {
+      font-size: 0.875rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      color: var(--pink);
+      border: 1px solid rgba(255,183,197,0.28);
+      background: rgba(255,183,197,0.06);
+      padding: 8px 16px;
+      border-radius: 999px;
+    }
+
+    .growth-subhead {
+      font-size: 0.875rem;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .growth-block-title {
+      font-size: clamp(1.4rem, 2.2vw, 1.9rem);
+      font-weight: 700;
+      margin-bottom: 40px;
+      letter-spacing: -0.01em;
+    }
+    .growth-block {
+      margin-top: 88px;
+    }
+
+    /* 이유 카드 3분할 */
+    .reason-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .reason-card {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.012);
+      padding: 32px 26px;
+      transition: border-color 200ms ease, background 200ms ease, transform 200ms ease;
+    }
+    .reason-card:hover {
+      border-color: rgba(255,183,197,0.32);
+      background: rgba(255,183,197,0.04);
+      transform: translateY(-4px);
+    }
+    .reason-num {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: var(--pink);
+      letter-spacing: 1px;
+      margin-bottom: 18px;
+      display: block;
+    }
+    .reason-card h4 {
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 12px;
+      line-height: 1.4;
+      word-break: keep-all;
+    }
+    .reason-card p {
+      font-size: 0.88rem;
+      color: var(--soft);
+      line-height: 1.75;
+      word-break: keep-all;
+    }
+
+    /* 재학 중 활동 태그 클라우드 */
+    .activity-tag-cloud {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .activity-tag-cloud span {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--soft);
+      border: 1px solid var(--line);
+      padding: 12px 22px;
+      transition: border-color 200ms ease, color 200ms ease;
+    }
+    .activity-tag-cloud span:hover {
+      border-color: var(--pink);
+      color: var(--pink);
+    }
+
+    /* 희망 산업군 / 직무 목표 2분할 */
+    .goal-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+    }
+    .goal-card {
+      border-top: 2px solid var(--pink);
+      padding: 32px 4px 0;
+    }
+    .goal-card .goal-label {
+      font-size: 0.875rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 14px;
+      display: block;
+    }
+    .goal-card .goal-quote {
+      font-size: clamp(1.15rem, 1.8vw, 1.5rem);
+      font-weight: 700;
+      color: var(--white);
+      line-height: 1.5;
+      margin-bottom: 18px;
+      word-break: keep-all;
+    }
+    .goal-card p {
+      font-size: 0.92rem;
+      color: var(--soft);
+      line-height: 1.85;
+      word-break: keep-all;
+    }
+
+    /* 강점 3분할 */
+    .strength-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .strength-card {
+      padding: 36px 28px;
+      background: #0a0a0a;
+      border: 1px solid var(--line);
+    }
+    .strength-tag {
+      font-family: var(--font-main);
+      font-size: 1.6rem;
+      color: rgba(255,183,197,0.5);
+      font-weight: 400;
+      line-height: 1.15;
+      margin-bottom: 24px;
+      letter-spacing: 0.01em;
+    }
+    .strength-card h4 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 12px;
+      word-break: keep-all;
+    }
+    .strength-card p {
+      font-size: 0.88rem;
+      color: var(--soft);
+      line-height: 1.8;
+      word-break: keep-all;
+    }
+
+    @media (max-width: 900px) {
+      .reason-grid, .strength-grid { grid-template-columns: 1fr; }
+      .goal-grid { grid-template-columns: 1fr; gap: 44px; }
     }
   </style>
 </head>
@@ -1376,8 +1763,8 @@
     <nav class="nav" aria-label="Primary navigation">
       <a class="brand" href="#top">Yoon Soo Ah<span>.</span></a>
       <div class="nav-links">
-        <a href="#sloganStage">Slogan</a>
         <a href="#profile">Profile</a>
+        <a href="growth.html">Growth</a>
         <a href="#works">Works</a>
         <a href="#contact">Contact</a>
       </div>
@@ -1386,13 +1773,33 @@
 
   <!-- 인트로 (Hero) -->
   <div id="top" class="intro">
-    <canvas class="ripple-canvas" id="rippleCanvas"></canvas>
-    <h1 class="intro-title" id="typingTitle"></h1>
+    <div class="hero-waves" aria-hidden="true">
+      <svg class="wave-layer-3" viewBox="0 0 2880 400" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,220 C240,140 480,300 720,220 C960,140 1200,300 1440,220 C1680,140 1920,300 2160,220 C2400,140 2640,300 2880,220 L2880,400 L0,400 Z" fill="#ff8fab"/>
+      </svg>
+      <svg class="wave-layer-2" viewBox="0 0 2880 400" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,240 C240,170 480,310 720,240 C960,170 1200,310 1440,240 C1680,170 1920,310 2160,240 C2400,170 2640,310 2880,240 L2880,400 L0,400 Z" fill="#FFB7C5"/>
+      </svg>
+      <svg class="wave-layer-1" viewBox="0 0 2880 400" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,260 C240,200 480,320 720,260 C960,200 1200,320 1440,260 C1680,200 1920,320 2160,260 C2400,200 2640,320 2880,260 L2880,400 L0,400 Z" fill="#ffc7d3"/>
+      </svg>
+    </div>
+    <div class="intro-welcome reveal">
+      <span class="intro-eyebrow">UI/UX</span>
+      <p class="intro-welcome-line">Welcome to my</p>
+      <p class="intro-welcome-line intro-welcome-indent">Portfolio</p>
+    </div>
+    <div class="intro-content">
+      <h1 class="intro-name" id="typingName"></h1>
+      <p class="intro-slogan" id="typingSlogan"></p>
+    </div>
+    <span class="intro-handle">@yoonsooah.desiger</span>
   </div>
 
   <!-- 2. SLOGAN & KEYWORD INTERACTION SPACE -->
   <section id="sloganStage" class="slogan-space-stage">
     <div class="slogan-headline-group reveal">
+      <span class="eyebrow-label">Slogan</span>
       <p class="slogan-main-line">흐름을 설계하고 무드를 편집하는<br><span>UI/UX 디자이너 윤수아</span>입니다.</p>
       <p class="slogan-sub-line">사용자의 직관적인 터치 인터랙션을 바탕으로 <strong>논리적인 에디토리얼</strong>을 구축하며, <br>변화 속에서도 흔들리지 않는 <strong>Own Value(나만의 가치)</strong>를 감각적인 경험으로 증명하겠습니다.</p>
     </div>
@@ -1439,119 +1846,166 @@
     
     <!-- 3. PROFILE SECTION -->
     <section id="profile" class="section">
-      <div class="profile-section-wrapper">
-        <div class="profile-layout-v2">
-          
-          <div class="profile-avatar-area reveal">
-            <div class="avatar-photo-large">
-              <img src="portfolio.jpg" alt="윤수아 프로필">
-            </div>
-            
 
-          </div>
-          
-          <div class="profile-content-area reveal" style="padding-top: 80px;">
-            <div class="editorial-heading-section">
-              <!-- 이름 텍스트 (글래스모피즘 박스 제거) -->
-              <h1 class="script-name-main">Yoon Soo Ah</h1>
-              <span class="script-name-sub-ko">윤수아</span>
-            </div>
-            
-            <div class="info-grid-v2">
-              <div class="info-block-v2">
-                <h3>Education</h3>
-                <ul class="info-list-v2">
-                  <li><strong>2025 ~</strong>미림마이스터고등학교 뉴미디어 디자인과 재학 중<span class="sub-text">전공 심화 인터페이스 및 UIUX 엔지니어링 집중 이수</span></li>
-                  <li><strong>~ 2025</strong>설악중학교 졸업</li>
-                </ul>
-              </div>
-              
-              <div class="info-block-v2">
-                <h3>Skill Set</h3>
-                <div style="display: flex; flex-direction: column; gap: 4px;">
-                  <div class="skill-item-row"><span class="skill-name-label">Figma</span><div class="skill-stars-box"><span class="star-on">✦</span><span class="star-on">✦</span><span class="star-on">✦</span><span class="star-on">✦</span><span class="star-on">✦</span></div></div>
-                  <div class="skill-item-row"><span class="skill-name-label">Photoshop</span><div class="skill-stars-box"><span class="star-on">✦</span><span class="star-on">✦</span><span class="star-on">✦</span><span class="star-on">✦</span><span class="star-on">✦</span></div></div>
-                  <div class="skill-item-row"><span class="skill-name-label">Vibe Code</span><div class="skill-stars-box"><span class="star-on">✦</span><span class="star-on">✦</span><span class="star-on">✦</span><span class="star-on">✦</span><span class="star-off">✦</span></div></div>
-                  <div class="skill-item-row"><span class="skill-name-label">InDesign</span><div class="skill-stars-box"><span class="star-on">✦</span><span class="star-on">✦</span><span class="star-on">✦</span><span class="star-on">✦</span><span class="star-off">✦</span></div></div>
-                  <div class="skill-item-row"><span class="skill-name-label">Blender</span><div class="skill-stars-box"><span class="star-on">✦</span><span class="star-on">✦</span><span class="star-on">✦</span><span class="star-off">✦</span><span class="star-off">✦</span></div></div>
-                  <div class="skill-item-row"><span class="skill-name-label">Illustrator</span><div class="skill-stars-box"><span class="star-on">✦</span><span class="star-on">✦</span><span class="star-on">✦</span><span class="star-off">✦</span><span class="star-off">✦</span></div></div>
-                </div>
-              </div>
+      <span class="eyebrow-label reveal">Profile</span>
 
-              <div class="info-block-v2">
-                <h3>Experience & Awards</h3>
-                <ul class="info-list-v2">
-                  <li><strong>2025</strong>제 22회 특성화고교생 사장되기 창업대회 금상</li>
-                  <li><strong>2025</strong>U/THON 최우수상</li>
-                  <li><strong>2025</strong>Figma Jazz 대상</li>
-                  <li><strong>2025</strong>MITHON 우수상</li>
-                  <li><strong>교내</strong>창업아이템 경진대회 예선 금상</li>
-                  <li><strong>교내</strong>창의아이디어 경진대회 예선 은상</li>
-                </ul>
-              </div>
-
-              <!-- 활동 기록 — 풀 스팬 -->
-              <div class="info-block-v2" style="grid-column: 1 / -1; border-top: 1px solid var(--line); padding-top: 40px; margin-top: 8px;">
-                <h3>Activities</h3>
-                <div class="activity-grid">
-
-                  <div class="activity-card">
-                    <div class="activity-body">
-                      <p class="activity-tag">협업 · 실전 학습</p>
-                      <p class="activity-title">소프트웨어과 협업 프로젝트</p>
-                      <p class="activity-desc">웹페이지 제작 프로젝트를 함께 진행하며 디자인과 전공 공부를 실전형 경험으로 연결했습니다.</p>
-                    </div>
-                  </div>
-
-                  <div class="activity-card">
-                    <div class="activity-body">
-                      <p class="activity-tag">아카이브 · SNS</p>
-                      <p class="activity-title">개인 디자인 계정 운영</p>
-                      <p class="activity-desc">해커톤과 개인 프로젝트 결과물을 꾸준히 정리하며 작업의 흐름을 아카이브로 축적하고 있습니다.</p>
-                    </div>
-                  </div>
-
-                  <div class="activity-card">
-                    <div class="activity-body">
-                      <p class="activity-tag">영상 편집 · 콘텐츠</p>
-                      <p class="activity-title">오늘의 디자인 팀 활동</p>
-                      <p class="activity-desc">영상 편집과 콘텐츠 출연 참여 경험을 넓히며 시각 커뮤니케이션 역량을 확장했습니다.</p>
-                    </div>
-                  </div>
-
-                  <div class="activity-card">
-                    <div class="activity-body">
-                      <p class="activity-tag">교외활동 · 2025</p>
-                      <p class="activity-title">TEENDEV — 홍보 디자인부 부장</p>
-                      <p class="activity-desc">교외 청소년 개발자 네트워크 TEENDEV에서 홍보 디자인부 부장으로 활동하며 브랜딩과 콘텐츠 기획을 리드했습니다.</p>
-                    </div>
-                  </div>
-
-                </div>
-              </div>
-
-              <!-- 수료증 -->
-              <div class="info-block-v2" style="grid-column: 1 / -1; border-top: 1px solid var(--line); padding-top: 40px; margin-top: 8px;">
-                <h3>Certifications</h3>
-                <ul class="info-list-v2 cert-list">
-                  <li>
-                    <div>
-                      <strong style="width:auto; display:block; margin-bottom:2px;">구글 공학도서관 ESG 수료증</strong>
-                      <span style="font-size:0.85rem; color:var(--muted);">Google 공학도서관 ESG 과정 이수</span>
-                    </div>
-                  </li>
-                </ul>
-              </div>
-            </div>
+      <!-- 프로필 히어로 — 사진과 이름이 큰 비중으로 상단 고정 -->
+      <div class="profile-hero reveal">
+        <div class="profile-hero-photo">
+          <div class="profile-photo">
+            <img src="portfolio.jpg" alt="윤수아 프로필">
           </div>
         </div>
+        <div class="profile-hero-name">
+          <h1 class="script-name-main">Yoon Soo Ah</h1>
+          <span class="script-name-sub-ko">윤수아 · UI/UX Designer</span>
+        </div>
+      </div>
+
+      <!-- 세부 항목 — 한 줄씩 아래로 쭉 이어지는 스택 레이아웃 -->
+      <div class="profile-details">
+
+        <div class="detail-row reveal">
+          <div class="info-block-v2"><h3>Education</h3></div>
+          <div>
+            <ul class="info-list-v2">
+              <li><strong>2025 ~</strong>미림마이스터고등학교 뉴미디어 디자인과 재학 중<span class="sub-text">전공 심화 인터페이스 및 UIUX 엔지니어링 집중 이수</span></li>
+              <li><strong>~ 2025</strong>설악중학교 졸업</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="detail-row reveal">
+          <div class="info-block-v2"><h3>Skill Set</h3></div>
+          <div class="skill-card-row">
+
+            <div class="skill-card">
+              <div>
+                <h4 class="skill-card-title">Figma</h4>
+                <p class="skill-card-desc"><strong>어떻게 활용하나요?</strong><br>와이어프레임부터 인터랙티브 프로토타입까지, 화면 구조와 사용자 흐름을 설계할 때 사용합니다.</p>
+              </div>
+              <span class="skill-card-tag">UI / UX</span>
+            </div>
+
+            <div class="skill-card">
+              <div>
+                <h4 class="skill-card-title">Photoshop</h4>
+                <p class="skill-card-desc"><strong>어떻게 활용하나요?</strong><br>촬영본과 그래픽 소스를 다듬어 프로젝트의 톤앤매너를 완성할 때 사용합니다.</p>
+              </div>
+              <span class="skill-card-tag">Editing</span>
+            </div>
+
+            <div class="skill-card">
+              <div>
+                <h4 class="skill-card-title">Vibe Code</h4>
+                <p class="skill-card-desc"><strong>어떻게 활용하나요?</strong><br>디자인이 실제로 어떻게 작동하는지 이해하기 위해 직접 프로토타입을 코드로 옮길 때 사용합니다.</p>
+              </div>
+              <span class="skill-card-tag">Prototype</span>
+            </div>
+
+            <div class="skill-card">
+              <div>
+                <h4 class="skill-card-title">InDesign</h4>
+                <p class="skill-card-desc"><strong>어떻게 활용하나요?</strong><br>정보의 위계를 정리하고 여백을 다루어 논리적인 편집 레이아웃을 만들 때 사용합니다.</p>
+              </div>
+              <span class="skill-card-tag">Editorial</span>
+            </div>
+
+            <div class="skill-card">
+              <div>
+                <h4 class="skill-card-title">Illustrator</h4>
+                <p class="skill-card-desc"><strong>어떻게 활용하나요?</strong><br>아이콘과 벡터 그래픽을 제작해 화면 곳곳의 디테일을 다듬을 때 사용합니다.</p>
+              </div>
+              <span class="skill-card-tag">Vector</span>
+            </div>
+
+            <div class="skill-card">
+              <div>
+                <h4 class="skill-card-title">Blender</h4>
+                <p class="skill-card-desc"><strong>어떻게 활용하나요?</strong><br>평면적인 화면에 입체감을 더하는 3D 오브젝트와 목업을 제작할 때 사용합니다.</p>
+              </div>
+              <span class="skill-card-tag">3D</span>
+            </div>
+
+          </div>
+        </div>
+
+
+        <div class="detail-row reveal">
+          <div class="info-block-v2"><h3>Experience &amp; Awards</h3></div>
+          <div>
+            <ul class="info-list-v2">
+              <li><strong>2025</strong>제 22회 특성화고교생 사장되기 창업대회 금상</li>
+              <li><strong>2025</strong>U/THON 최우수상</li>
+              <li><strong>2025</strong>Figma Jazz 대상</li>
+              <li><strong>2025</strong>MITHON 우수상</li>
+              <li><strong>교내</strong>창업아이템 경진대회 예선 금상</li>
+              <li><strong>교내</strong>창의아이디어 경진대회 예선 은상</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="detail-row reveal">
+          <div class="info-block-v2"><h3>Activities</h3></div>
+          <div class="activity-grid">
+
+            <div class="activity-card">
+              <div class="activity-body">
+                <p class="activity-tag">협업 · 실전 학습</p>
+                <p class="activity-title">소프트웨어과 협업 프로젝트</p>
+                <p class="activity-desc">웹페이지 제작 프로젝트를 함께 진행하며 디자인과 전공 공부를 실전형 경험으로 연결했습니다.</p>
+              </div>
+            </div>
+
+            <div class="activity-card">
+              <div class="activity-body">
+                <p class="activity-tag">아카이브 · SNS</p>
+                <p class="activity-title">개인 디자인 계정 운영</p>
+                <p class="activity-desc">해커톤과 개인 프로젝트 결과물을 꾸준히 정리하며 작업의 흐름을 아카이브로 축적하고 있습니다.</p>
+              </div>
+            </div>
+
+            <div class="activity-card">
+              <div class="activity-body">
+                <p class="activity-tag">영상 편집 · 콘텐츠</p>
+                <p class="activity-title">오늘의 디자인 팀 활동</p>
+                <p class="activity-desc">영상 편집과 콘텐츠 출연 참여 경험을 넓히며 시각 커뮤니케이션 역량을 확장했습니다.</p>
+              </div>
+            </div>
+
+            <div class="activity-card">
+              <div class="activity-body">
+                <p class="activity-tag">교외활동 · 2025</p>
+                <p class="activity-title">TEENDEV — 홍보 디자인부 부장</p>
+                <p class="activity-desc">교외 청소년 개발자 네트워크 TEENDEV에서 홍보 디자인부 부장으로 활동하며 브랜딩과 콘텐츠 기획을 리드했습니다.</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="detail-row reveal">
+          <div class="info-block-v2"><h3>Certifications</h3></div>
+          <div>
+            <ul class="info-list-v2 cert-list">
+              <li>
+                <div>
+                  <strong style="width:auto; display:block; margin-bottom:2px;">구글 공학도서관 ESG 수료증</strong>
+                  <span style="font-size: 0.875rem; color:var(--muted);">Google 공학도서관 ESG 과정 이수</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+
       </div>
     </section>
 
     <!-- 4. WORKS SECTION -->
     <section id="works" class="section">
       <div class="reveal" style="margin-bottom: 48px;">
-        <h2 style="font-size: clamp(2rem, 4vw, 3.5rem); font-weight: 700; letter-spacing: 2px;">SELECTED <span style="color:var(--pink)">WORKS</span></h2>
+        <span class="eyebrow-label">Works</span>
+        <h2 style="font-size: clamp(2rem, 4vw, 3.5rem); font-weight: 700; letter-spacing: 0.5px; line-height: 1.15;">SELECTED <span style="color:var(--pink)">WORKS</span></h2>
       </div>
 
       <!-- 대표 프로젝트 카드 갤러리 -->
@@ -1570,11 +2024,11 @@
             <div class="feat-card" tabindex="0" data-modal-trigger
               data-imgs="work_piece.jpg,work_piece_2.jpg,work_piece_3.jpg"
               data-index="FEATURED WORK"
-              data-title="PIECE (피스)">
+              data-title="PIECE">
               <img class="feat-card-img" src="work_piece.jpg" alt="PIECE">
               <div class="feat-card-overlay">
                 <span class="feat-card-badge">FEATURED</span>
-                <div class="feat-card-title">PIECE (피스)</div>
+                <div class="feat-card-title">PIECE</div>
                 <div class="feat-card-desc">실제 커머스 링크 기반 친구들과 조각 펀딩을 통해 실용적인 기프팅 경험을 제공하는 플랫폼</div>
                 <div class="list-tags-box" style="display:none"><span>#UIUX</span><span>#Mobile Web</span><span>#Commerce</span></div>
               </div>
@@ -1625,9 +2079,9 @@
       
       <div class="project-list-container reveal">
         
-        <div class="project-list-item" tabindex="0" data-modal-trigger data-img="work_piece.jpg" data-index="FEATURED WORK" data-title="PIECE (피스)" data-desc="실제 커머스 링크 기반 친구들과 조각 펀딩을 통해 실용적인 기프팅 경험을 제공하는 웹/앱 플랫폼입니다. 수많은 선물 대신 내게 꼭 필요한 단 하나의 선물 구조를 구현했습니다.">
+        <div class="project-list-item" tabindex="0" data-modal-trigger data-img="work_piece.jpg" data-index="FEATURED WORK" data-title="PIECE" data-desc="실제 커머스 링크 기반 친구들과 조각 펀딩을 통해 실용적인 기프팅 경험을 제공하는 웹/앱 플랫폼입니다. 수많은 선물 대신 내게 꼭 필요한 단 하나의 선물 구조를 구현했습니다.">
           <div class="list-index">FEATURED</div>
-          <div class="list-title-box"><h3>PIECE (피스)</h3></div>
+          <div class="list-title-box"><h3>PIECE</h3></div>
           <div class="list-desc-box"><p>실제 커머스 링크 기반 친구들과 조각 펀딩을 통해 실용적인 기프팅 경험을 제공하는 플랫폼</p></div>
           <div class="list-tags-box"><span>#UIUX</span> <span>#Mobile Web</span> <span>#Commerce</span></div>
         </div>
@@ -1687,12 +2141,27 @@
       </div>
     </section>
 
-    <!-- 5. CONTACT SECTION -->
+  </main>
+
+  <!-- SCATTER INTRO — 컨택 섹션 바로 위로 재배치, 1920×1080 캔버스 -->
+  <section class="scatter-intro">
+    <div class="scatter-center reveal">
+      <p class="scatter-eyebrow">Portfolio 2026</p>
+      <h2 class="scatter-title">Yoon<br>Soo Ah</h2>
+      <p class="scatter-desc">흐름을 설계하고 무드를 편집하는 UI/UX 디자이너. 논리적인 구조 위에 감각적인 무드를 얹어, 변화 속에서도 흔들리지 않는 Own Value를 증명합니다.</p>
+      <a href="growth.html" class="scatter-cta">
+        <span class="cta-label">MY GROWTH</span>
+        <span class="cta-arrow">↗</span>
+      </a>
+    </div>
+  </section>
+
+  <div class="container">
     <section id="contact" class="section">
       <div class="contact reveal">
-        <div><h2 class="invert-target">LET'S.<br>CONNECT</h2></div>
+        <div><span class="eyebrow-label">Contact</span><h2 class="invert-target">LET'S.<br>CONNECT</h2></div>
         <div class="contact-links">
-          <p class="copy-note" style="color: var(--muted); font-size: 12px; margin-bottom: 6px;">항목을 누르면 복사 토스트 팝업 창이 동시 구동됩니다.</p>
+          <p class="copy-note" style="color: var(--muted); font-size: 14px; margin-bottom: 6px;">항목을 누르면 복사 토스트 팝업 창이 동시 구동됩니다.</p>
           
           <a href="tel:01040258058" class="copy-contact" data-copy="010-4025-8058">
             <span class="link-label">PHONE</span><span class="link-value">010-4025-8058</span>
@@ -1711,7 +2180,7 @@
       </div>
     </section>
 
-  </main>
+  </div>
 
   <footer class="site-footer">
     <div class="container" style="padding: 0 var(--gutter);"><p>© 2026 YOONSOOAH. All rights reserved.</p></div>
@@ -1719,137 +2188,48 @@
 
   <script>
     /* ===================================================
-       1. 타이핑 컨버전 엔진
+       1. 커튼 오픈 → 이름 + 슬로건 순차 타이핑 인터랙션 엔진
        =================================================== */
-    const typingElement = document.getElementById('typingTitle');
-    const firstWord = "Portfolio";
-    const secondWord = "Yoon Soo Ah";
-    let charIndex = 0;
-    let isDeleting = false;
-    let isSwitchingStage = false;
+    const nameElement = document.getElementById('typingName');
+    const sloganElement = document.getElementById('typingSlogan');
+    const nameWord = "Yoon Soo Ah";
+    const sloganWord = "Designing Flow, Craft the Mood.";
+    let nameIndex = 0;
+    let sloganIndex = 0;
 
-    function startTypingPipeline() {
-      if (!isSwitchingStage) {
-        if (!isDeleting) {
-          typingElement.textContent = firstWord.substring(0, charIndex + 1);
-          charIndex++;
-          if (charIndex === firstWord.length) {
-            isDeleting = true;
-            setTimeout(startTypingPipeline, 1200);
-            return;
-          }
-        } else {
-          typingElement.textContent = firstWord.substring(0, charIndex - 1);
-          charIndex--;
-          if (charIndex === 0) {
-            isDeleting = false;
-            isSwitchingStage = true;
-          }
-        }
-      } else {
-        typingElement.textContent = secondWord.substring(0, charIndex + 1);
-        charIndex++;
-        if (charIndex === secondWord.length) {
-          typingElement.classList.add('typing-complete');
-          return;
-        }
+    function typeSlogan() {
+      sloganElement.classList.add('is-typing');
+      sloganElement.textContent = sloganWord.substring(0, sloganIndex + 1);
+      sloganIndex++;
+      if (sloganIndex === sloganWord.length) {
+        sloganElement.classList.remove('is-typing');
+        return;
       }
-      setTimeout(startTypingPipeline, isDeleting ? 40 : 90);
+      setTimeout(typeSlogan, 55);
     }
-    /* 폰트 로드 완료 후 타이핑 시작 — 캘리그라피 깨짐 방지 */
+
+    function typeName() {
+      nameElement.classList.add('is-typing');
+      nameElement.textContent = nameWord.substring(0, nameIndex + 1);
+      nameIndex++;
+      if (nameIndex === nameWord.length) {
+        nameElement.classList.remove('is-typing');
+        /* 이름을 다 쓰면 잠시 멈췄다가 슬로건 타이핑 시작 */
+        setTimeout(typeSlogan, 350);
+        return;
+      }
+      setTimeout(typeName, 90);
+    }
+
+    /* 폰트 로드 완료 후 타이핑 시작 — 텍스트 폭 계산 깨짐 방지 */
     window.addEventListener('DOMContentLoaded', () => {
       document.fonts.ready.then(() => {
-        setTimeout(startTypingPipeline, 300);
+        setTimeout(typeName, 500);
       });
     });
 
     /* ===================================================
-       2. 흐르는 웨이브 라인 인터랙션 엔진
-       =================================================== */
-    const canvas = document.getElementById('rippleCanvas');
-    const ctx = canvas.getContext('2d');
-
-    function resizeCanvas() {
-      canvas.width  = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
-    }
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-
-    /* ── 웨이브 그룹 정의 ──
-       각 그룹은 여러 개의 평행 라인이 묶여 교차하며 흐름
-       phase, speed, amplitude, yBase, count, color, lineW 를 가짐 */
-    const waveGroups = [
-      /* 그룹 A — 핑크 계열, 화면 하단 좌→우로 흐름 */
-      { phase: 0,    speed: 0.0007, amp: 0.22, yBase: 0.60, count: 28, color: 'rgba(255,183,197,{a})', lineW: 0.7 },
-      /* 그룹 B — 화이트 계열, 역방향 */
-      { phase: 1.6,  speed: 0.0009, amp: 0.18, yBase: 0.55, count: 22, color: 'rgba(255,255,255,{a})', lineW: 0.5 },
-      /* 그룹 C — 연한 핑크, 더 넓은 파동 */
-      { phase: 3.2,  speed: 0.0006, amp: 0.28, yBase: 0.72, count: 18, color: 'rgba(255,183,197,{a})', lineW: 0.55 },
-      /* 그룹 D — 교차용 얕은 파동 */
-      { phase: 0.8,  speed: 0.0011, amp: 0.13, yBase: 0.48, count: 16, color: 'rgba(255,255,255,{a})', lineW: 0.4 },
-    ];
-
-    /* 마우스 Y 위치로 파동 반응 (0~1) */
-    let mouseInfluence = 0.5;
-    window.addEventListener('mousemove', (e) => {
-      mouseInfluence = e.clientY / window.innerHeight;
-    });
-
-    function getWaveY(group, x, t, lineIndex) {
-      const W = canvas.width;
-      const H = canvas.height;
-      const spread = 0.018; // 라인 간 Y 간격 비율
-      const baseY  = group.yBase + (lineIndex - group.count / 2) * spread;
-
-      /* 두 개의 sin 파동을 겹쳐서 복잡한 물결 생성
-         t는 초 단위 경과 시간 — 부동소수점 범위 내에서 항상 안정적 */
-      const nx = x / W;
-      const dir = group.speed > 0.0009 ? -1 : 1;
-      const y1 = Math.sin(nx * Math.PI * 2.5 + t * dir * group.speed * 1000 + group.phase) * group.amp;
-      const y2 = Math.sin(nx * Math.PI * 4.2 + t * 0.5 + group.phase * 0.6) * group.amp * 0.45;
-      /* 마우스 영향: 마우스가 위쪽일수록 파동이 위로 이동 */
-      const mouseShift = (mouseInfluence - 0.5) * 0.12;
-
-      return (baseY + y1 + y2 + mouseShift) * H;
-    }
-
-    function drawWaveGroup(group, t) {
-      const W = canvas.width;
-      const STEPS = Math.ceil(W / 3); // 3px 간격으로 포인트 샘플링
-
-      for (let li = 0; li < group.count; li++) {
-        /* 라인마다 투명도 차등 — 중앙 라인이 가장 진함 */
-        const centerDist = Math.abs(li - group.count / 2) / (group.count / 2);
-        const alpha = (1 - centerDist * 0.75) * 0.22;
-        const colorStr = group.color.replace('{a}', alpha.toFixed(3));
-
-        ctx.beginPath();
-        ctx.strokeStyle = colorStr;
-        ctx.lineWidth   = group.lineW;
-
-        for (let s = 0; s <= STEPS; s++) {
-          const x = (s / STEPS) * W;
-          const y = getWaveY(group, x, t, li);
-          s === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-        }
-        ctx.stroke();
-      }
-    }
-
-    /* requestAnimationFrame 타임스탬프(ms)를 초 단위로 변환하여 사용
-       → waveTime 을 매 프레임 +1씩 누산하던 방식 제거
-       → 부동소수점 정밀도 손실 없이 항상 안정적인 sin 계산 보장 */
-    function animateWaves(timestamp) {
-      const t = timestamp / 1000; // 초 단위
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      waveGroups.forEach(g => drawWaveGroup(g, t));
-      requestAnimationFrame(animateWaves);
-    }
-    requestAnimationFrame(animateWaves);
-
-    /* ===================================================
-       3. 커서 오라 트래킹 및 파동 이펙트
+       2. 커서 오라 트래킹 및 파동 이펙트
        =================================================== */
     const cursorOrb = document.querySelector('.cursor-orb');
     let mousePos = { x: 0, y: 0 };
