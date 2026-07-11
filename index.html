@@ -380,14 +380,14 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      opacity: 0.55;
+      opacity: 0.6;
     }
     .scatter-bg-overlay {
       position: absolute;
       inset: 0;
       z-index: 1;
       background:
-        linear-gradient(90deg, rgba(5,5,5,0.9) 0%, rgba(5,5,5,0.55) 45%, rgba(5,5,5,0.35) 100%),
+        linear-gradient(90deg, rgba(5,5,5,0.92) 0%, rgba(5,5,5,0.6) 45%, rgba(5,5,5,0.35) 100%),
         linear-gradient(180deg, rgba(5,5,5,0.4) 0%, rgba(5,5,5,0.15) 30%, rgba(5,5,5,0.55) 100%);
     }
 
@@ -412,10 +412,11 @@
       letter-spacing: 0.02em;
       color: var(--white);
       margin-bottom: 26px;
+      filter: drop-shadow(0 2px 24px rgba(255,183,197,0.3));
     }
     .scatter-desc {
       font-size: 1.02rem;
-      color: var(--soft);
+      color: rgba(255,255,255,0.75);
       line-height: 1.85;
       word-break: keep-all;
       margin-bottom: 36px;
@@ -425,12 +426,12 @@
       align-items: center;
       gap: 14px;
       text-decoration: none;
-      border: 1px solid var(--line-bright);
+      border: 1px solid var(--pink);
       padding: 10px 10px 10px 26px;
       border-radius: 999px;
       transition: border-color 200ms ease, background 200ms ease;
     }
-    .scatter-cta:hover { border-color: var(--pink); background: rgba(255,183,197,0.06); }
+    .scatter-cta:hover { border-color: var(--pink); background: rgba(255,183,197,0.14); }
     .scatter-cta span.cta-label {
       font-size: 0.92rem;
       font-weight: 700;
@@ -442,7 +443,7 @@
       height: 34px;
       border-radius: 50%;
       background: var(--pink);
-      color: #000;
+      color: #ffffff;
       display: flex;
       align-items: center;
       justify-content: center;
