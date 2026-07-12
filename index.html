@@ -908,6 +908,7 @@
       margin-top: 20px;
     }
     .project-grid-container.is-hidden { display: none; }
+    .project-grid-container .feat-card.is-hidden { display: none !important; }
     .project-list-container.is-hidden { display: none; }
 
     @media (max-width: 1000px) {
@@ -2270,7 +2271,7 @@
           </div>
         </div>
 
-        <div class="feat-card" tabindex="0" data-modal-trigger data-img="momento.jpg" data-title="Momento">
+        <div class="feat-card is-hidden" tabindex="0" data-modal-trigger data-img="momento.jpg" data-title="Momento">
           <img class="feat-card-img" src="momento.jpg" alt="Momento">
           <div class="feat-card-overlay">
             <div class="feat-card-title">Momento</div>
@@ -2278,7 +2279,7 @@
           </div>
         </div>
 
-        <div class="feat-card" tabindex="0" data-modal-trigger data-imgs="work_mas.jpg,work_mas_2.jpg,work_mas_3.jpg" data-title="MAS Website">
+        <div class="feat-card is-hidden" tabindex="0" data-modal-trigger data-imgs="work_mas.jpg,work_mas_2.jpg,work_mas_3.jpg" data-title="MAS Website">
           <img class="feat-card-img" src="work_mas.jpg" alt="MAS Website">
           <div class="feat-card-overlay">
             <div class="feat-card-title">MAS Website</div>
@@ -2286,7 +2287,7 @@
           </div>
         </div>
 
-        <div class="feat-card" tabindex="0" data-modal-trigger data-img="work_aesop.jpg" data-title="Aesop Story Web">
+        <div class="feat-card is-hidden" tabindex="0" data-modal-trigger data-img="work_aesop.jpg" data-title="Aesop Story Web">
           <img class="feat-card-img" src="work_aesop.jpg" alt="Aesop Story Web">
           <div class="feat-card-overlay">
             <div class="feat-card-title">Aesop Story Web</div>
@@ -2294,7 +2295,7 @@
           </div>
         </div>
 
-        <div class="feat-card" tabindex="0" data-modal-trigger data-img="work_asics.jpg" data-title="Asics Designer">
+        <div class="feat-card is-hidden" tabindex="0" data-modal-trigger data-img="work_asics.jpg" data-title="Asics Designer">
           <img class="feat-card-img" src="work_asics.jpg" alt="Asics Designer">
           <div class="feat-card-overlay">
             <div class="feat-card-title">Asics Designer</div>
@@ -2683,16 +2684,34 @@
     /* ===================================================
        5. 프로젝트 리스트 컴팩트 목록 더보기
        =================================================== */
-    const loadMoreBtn = document.getElementById('loadMoreProjectsBtn');
-    const hiddenCards = document.querySelectorAll('.project-list-container .project-list-item.is-hidden');
+    /* CMS 데이터가 나중에 리스트/그리드를 새로 그려 넣기 때문에,
+       페이지 로드 시 + CMS 렌더링 후 다시 호출할 수 있도록 함수로 분리 */
+    function initMoreProjects() {
+      const btn0 = document.getElementById('loadMoreProjectsBtn');
+      if (!btn0) return;
+      const btn = btn0.cloneNode(true);
+      btn0.replaceWith(btn);
 
-    loadMoreBtn.addEventListener('click', () => {
-      hiddenCards.forEach(card => {
-        card.classList.remove('is-hidden');
-        setTimeout(() => card.classList.add('is-visible'), 50);
+      const expandContainer = btn.parentElement;
+      const anyHidden =
+        document.querySelector('.project-list-container .project-list-item.is-hidden') ||
+        document.querySelector('.project-grid-container .feat-card.is-hidden');
+      expandContainer.style.display = anyHidden ? '' : 'none';
+      expandContainer.classList.remove('is-hidden');
+
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.project-list-container .project-list-item.is-hidden').forEach(card => {
+          card.classList.remove('is-hidden');
+          setTimeout(() => card.classList.add('is-visible'), 50);
+        });
+        document.querySelectorAll('.project-grid-container .feat-card.is-hidden').forEach(card => {
+          card.classList.remove('is-hidden');
+          setTimeout(() => card.classList.add('is-visible'), 50);
+        });
+        expandContainer.style.display = 'none';
       });
-      loadMoreBtn.parentElement.style.display = 'none';
-    });
+    }
+    initMoreProjects();
 
     /* ===================================================
        5-1. Works Grid / List 뷰 토글
@@ -2705,12 +2724,19 @@
       const expandContainer = document.querySelector('.list-expand-container');
       if (!gridBtn || !listBtn || !gridContainer || !listContainer) return;
 
+      // More Projects 버튼은 이미 눌려서 다 펼쳐진 상태가 아니라면 Grid/List 어느 쪽이든 계속 보이게 함
+      function syncExpandVisibility() {
+        if (!expandContainer) return;
+        if (expandContainer.style.display === 'none') return; // 이미 More Projects 눌러서 완전히 감춘 상태
+        expandContainer.classList.remove('is-hidden');
+      }
+
       gridBtn.addEventListener('click', () => {
         gridBtn.classList.add('is-active');
         listBtn.classList.remove('is-active');
         gridContainer.classList.remove('is-hidden');
         listContainer.classList.add('is-hidden');
-        if (expandContainer) expandContainer.classList.add('is-hidden');
+        syncExpandVisibility();
       });
 
       listBtn.addEventListener('click', () => {
@@ -2718,9 +2744,7 @@
         gridBtn.classList.remove('is-active');
         listContainer.classList.remove('is-hidden');
         gridContainer.classList.add('is-hidden');
-        if (expandContainer && expandContainer.style.display !== 'none') {
-          expandContainer.classList.remove('is-hidden');
-        }
+        syncExpandVisibility();
       });
     })();
 
@@ -2976,8 +3000,8 @@
     function renderProjectList(projects) {
       const list = document.querySelector('.project-list-container');
       if (!list) return;
-      list.innerHTML = projects.map(p => `
-        <div class="project-list-item" tabindex="0" data-modal-trigger
+      list.innerHTML = projects.map((p, i) => `
+        <div class="project-list-item${i >= 4 ? ' is-hidden' : ''}" tabindex="0" data-modal-trigger
           data-imgs="${(p.galleryUrls || [p.thumbnailUrl]).join(',')}"
           data-index="${p.index || ''}"
           data-title="${p.title}"
@@ -2988,6 +3012,7 @@
           <div class="list-tags-box">${(p.tags || []).map(t => `<span>#${t}</span>`).join(' ')}</div>
         </div>
       `).join('');
+      initMoreProjects();
     }
 
     // Grid 뷰(project-grid-container)도 동일한 CMS 데이터로 채움 —
@@ -2995,8 +3020,8 @@
     function renderProjectGrid(projects) {
       const grid = document.querySelector('.project-grid-container');
       if (!grid || !projects.length) return;
-      grid.innerHTML = projects.map((p) => `
-        <div class="feat-card" tabindex="0" data-modal-trigger
+      grid.innerHTML = projects.map((p, i) => `
+        <div class="feat-card${i >= 4 ? ' is-hidden' : ''}" tabindex="0" data-modal-trigger
           data-imgs="${(p.galleryUrls || [p.thumbnailUrl]).join(',')}"
           data-title="${p.title}">
           <img class="feat-card-img" src="${p.thumbnailUrl}" alt="${p.title}">
@@ -3006,6 +3031,7 @@
           </div>
         </div>
       `).join('');
+      initMoreProjects();
     }
 
     window.addEventListener('DOMContentLoaded', loadProjectsFromCMS);
